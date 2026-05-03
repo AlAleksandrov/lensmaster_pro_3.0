@@ -1,3 +1,10 @@
+You want to check here and now:
+
+[Live Demo](https://lensmaster-pro.onrender.com)
+[👤 Demo Users](#-demo-users)
+
+---
+
 # 📷 LensMaster Pro
 
 ![Python](https://img.shields.io/badge/python-3.14-blue.svg)
@@ -18,6 +25,7 @@
 - [🧭 Site Map & Operations](#-site-map--operations)
 - [🗂️ Directory Structure](#️-directory-structure)
 - [🚀 Installation & Setup](#-installation--setup)
+- [👤 Demo Users](#-demo-users)
 - [🌐 Live Demo](#-live-demo)
 - [🖼️ Screenshots](#️-screenshots)
 - [🧪 Data Management](#-data-management)
@@ -239,8 +247,8 @@ To simplify evaluation, the project includes pre-configured users:
 
 ## 🌐 Live Demo
 
-- [Live Demo — Render](https://lensmaster-pro-2-0.onrender.com)
-- [Live Demo — Azure](https://lensmasterpro2-ghgmfnbbhfayfneh.spaincentral-01.azurewebsites.net)
+- [Live Demo — Render](https://lensmaster-pro.onrender.com)
+- [Live Demo — Azure](coming soon)
 
 ---
 
