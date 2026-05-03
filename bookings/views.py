@@ -1,3 +1,6 @@
+import logging
+import stripe
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -8,8 +11,10 @@ from bookings.forms import BookingRequestForm, ServicePackageForm
 from bookings.models import BookingRequest, ServicePackage
 from django.db.models import Q
 from common.mixins import PhotographerRequiredMixin
-from productions.models import Category
 
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class BookingCreateView(CreateView):
@@ -22,9 +27,9 @@ class BookingCreateView(CreateView):
         initial = super().get_initial()
         user = self.request.user
         if user.is_authenticated:
-            initial['first_name'] = user.first_name
-            initial['last_name'] = user.last_name
-            initial['email'] = user.email
+            initial['first_name'] = getattr(user, 'first_name', '')
+            initial['last_name'] = getattr(user, 'last_name', '')
+            initial['email'] = getattr(user, 'email', '')
 
             try:
                 if hasattr(user, 'profile'):
@@ -34,11 +39,72 @@ class BookingCreateView(CreateView):
                 pass
         return initial
 
-
     def form_valid(self, form):
+        booking = form.save(commit=False)
+
         if self.request.user.is_authenticated:
-            form.instance.user = self.request.user
-        return super().form_valid(form)
+            booking.user = self.request.user
+
+        if not booking.package:
+            booking.save()
+            return redirect(self.success_url)
+
+        booking.save()
+
+        try:
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                customer_email=form.cleaned_data.get('email'),
+                customer_creation='always',
+                line_items=[{
+                    'price_data': {
+                        'currency': 'eur',
+                        'product_data': {
+                            'name': f"Package: {booking.package.name}",
+                            'description': (
+                                f"Date: {booking.event_date} | "
+                                f"Client: {form.cleaned_data.get('first_name')} "
+                                f"{form.cleaned_data.get('last_name')}"
+                            ),
+                        },
+                        'unit_amount': int(booking.package.price * 100),
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                payment_intent_data={
+                    'description': f"Booking #{booking.id} — {booking.package.name}",
+                },
+                metadata={
+                    'booking_id': str(booking.id),
+                    'package_id': str(booking.package.id),
+                    'customer_email': form.cleaned_data.get('email', ''),
+                },
+                success_url=str(self.request.build_absolute_uri(
+                    reverse_lazy('bookings:booking_success')
+                )),
+                cancel_url=str(self.request.build_absolute_uri(
+                    reverse_lazy('bookings:booking_request')
+                )),
+                client_reference_id=str(booking.id),
+            )
+
+            booking.stripe_payment_id = session.id
+            booking.save(update_fields=['stripe_payment_id'])
+
+            return redirect(session.url, code=303)
+
+        except stripe.error.StripeError as e:
+            logger.error("Stripe error for booking id=%s: %s", booking.id, e)
+            booking.delete()
+            form.add_error(None, "Payment service is temporarily unavailable. Please try again.")
+            return self.form_invalid(form)
+
+        except Exception as e:
+            logger.exception("Unexpected error during booking creation for id=%s: %s", booking.id, e)
+            booking.delete()
+            form.add_error(None, "An unexpected error occurred. Please try again.")
+            return self.form_invalid(form)
 
     def get_form(self, form_class = None):
         form = super().get_form(form_class)
@@ -86,7 +152,7 @@ class BookingListView(PhotographerRequiredMixin, ListView):
 
 class BookingUpdateView(PhotographerRequiredMixin, UpdateView):
     model = BookingRequest
-    fields = ['status', 'internal_notes', 'event_date', 'package']
+    fields = ['status', 'internal_notes', 'event_date', 'package', 'photographer', 'slot_start_time', 'is_paid']
     template_name = 'bookings/booking_edit.html'
     success_url = reverse_lazy('bookings:booking_list')
 
@@ -165,14 +231,22 @@ class ServicePackageByCategoryListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_category'] = Category.objects.get(pk=self.kwargs['category_id']).name
+        from django.shortcuts import get_object_or_404
+        from productions.models import Category
+        category = get_object_or_404(Category, pk=self.kwargs['category_id'])
+        context['current_category'] = category.name
         return context
 
 
 class ToggleFavoritePackageView(LoginRequiredMixin, View):
     def post(self, request, pk):
         package = get_object_or_404(ServicePackage, pk=pk)
-        profile = request.user.profile
+        profile = getattr(request.user, 'profile', None)
+
+        if profile is None:
+            from django.contrib import messages
+            messages.warning(request, "Please complete your profile first.")
+            return redirect('bookings:package_detail', pk=pk)
 
         if package in profile.favorite_packages.all():
             profile.favorite_packages.remove(package)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 # Create your models here.
@@ -53,11 +54,10 @@ class ActiveStatusMixin(models.Model):
 
 
 class ContactInfoMixin(models.Model):
-    phone = models.CharField(
-        max_length=30,
-        blank=True,
-        null=True,
-        help_text='Phone number for contact purposes',
+    phone = PhoneNumberField(
+        blank=False,
+        null=False,
+        help_text="Enter phone number with country code for contact purposes"
     )
     city = models.CharField(
         max_length=100,

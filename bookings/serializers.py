@@ -10,10 +10,12 @@ class ServicePackageSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
-            'category',
-            'category_name',
             'description',
             'price',
+            'duration_hours',
+            'max_photos_included',
+            'category',
+            'category_name',
             'is_active',
         ]
 

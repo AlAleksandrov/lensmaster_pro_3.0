@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %}Book a Session - LensMaster Pro{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+
 <div class="row justify-content-center py-4 py-lg-5">
     <div class="col-md-10 col-lg-8">
         <div class="card border-0 rounded-4 overflow-hidden">
@@ -26,8 +29,6 @@
 
                 <!-- RIGHT SIDE: THE FORM -->
                 <div class="col-md-8 bg-white p-4 p-md-5">
-                    {% load crispy_forms_tags %}
-
                     <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
                         <div>
                             <h3 class="fw-bold mb-1">Booking Request</h3>
@@ -35,7 +36,7 @@
                         </div>
                     </div>
 
-                    <form method="post" novalidate>
+                    <form method="post" novalidate id="booking-form">
                         {% csrf_token %}
 
                         {{ form|crispy }}
@@ -58,4 +59,8 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"></script>
+<script src="{% static 'js/booking-phone.js' %}"></script>
 {% endblock %}

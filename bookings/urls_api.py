@@ -11,4 +11,5 @@ urlpatterns = [
             path('', views_api.ServicePackageListAPIView.as_view(), name='api_package_list'),
             path('<int:pk>/', views_api.ServicePackageDetailAPIView.as_view(), name='api_package_detail'),
         ])),
+        path('available-slots/', views_api.AvailableSlotsAPIView.as_view(), name='api_available_slots'),
 ]

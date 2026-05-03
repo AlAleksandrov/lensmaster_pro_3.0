@@ -7,4 +7,4 @@ class BookingsConfig(AppConfig):
 
 
     def ready(self):
-        import bookings.signals
+        import bookings.signals # noqa

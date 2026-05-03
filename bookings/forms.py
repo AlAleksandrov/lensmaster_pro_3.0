@@ -29,7 +29,7 @@ class BookingRequestForm(forms.ModelForm):
             'message': 'Message',
         }
         help_texts = {
-            'phone': 'Please provide a valid phone number (at least 10 digits).',
+            'phone': 'Select your country code and enter your local phone number.',
             'event_date': 'Please select a future date for your event.',
             'package': 'Select the service package that best suits your needs.',
             'message': 'Please tell us more about your event (at least 10 characters)...',
@@ -64,7 +64,10 @@ class BookingRequestForm(forms.ModelForm):
             ),
             'phone': forms.TextInput(
                 attrs={
-                    'placeholder': '08XXXXXXXX'
+                    'id': 'phone-input',
+                    'type': 'tel',
+                    'class': 'form-control',
+                    'placeholder': 'Your phone number'
                 }
             ),
             'city': forms.TextInput(
@@ -96,24 +99,17 @@ class BookingRequestForm(forms.ModelForm):
         return date
 
     def clean_message(self):
-        message = self.cleaned_data.get('message')
-        if not message.strip():
+        message = (self.cleaned_data.get('message') or '').strip()
+        if not message:
             raise forms.ValidationError('Message cannot be empty.')
         if len(message) < 10:
             raise forms.ValidationError('Please provide a bit more details (at least 10 characters).')
         return message
 
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
-        if not phone.strip():
-            raise forms.ValidationError('Phone number cannot be empty.')
-        if len(phone) < 10:
-            raise forms.ValidationError('Phone number must be at least 10 digits.')
-        return phone
 
     def clean_city(self):
-        city = self.cleaned_data.get('city')
-        if not city.strip():
+        city = (self.cleaned_data.get('city') or '').strip()
+        if not city:
             raise forms.ValidationError('City cannot be empty.')
         return city
 
@@ -217,14 +213,14 @@ class ServicePackageForm(forms.ModelForm):
         return max_photos_included
 
     def clean_description(self):
-        description = self.cleaned_data.get('description')
-        if not description.strip():
+        description = (self.cleaned_data.get('description') or '').strip()
+        if not description:
             raise forms.ValidationError("Description cannot be empty.")
         return description
 
     def clean_name(self):
-        name = self.cleaned_data.get('name')
-        if not name.strip():
+        name = (self.cleaned_data.get('name') or '').strip()
+        if not name:
             raise forms.ValidationError("Name cannot be empty.")
         return name
 

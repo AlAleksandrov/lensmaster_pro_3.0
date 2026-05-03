@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'corsheaders',
     'django_filters',
+    'phonenumber_field',
 ] + PROJECT_APPS
 
 MIDDLEWARE = [
@@ -332,6 +333,12 @@ if DEBUG and EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
             "EMAIL_HOST_USER / EMAIL_HOST_PASSWORD are not configured. "
             "Mail sending will fail until Mailjet SMTP credentials are set."
         )
+
+
+# Stripe settings
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', 'pk_test_default_key')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', 'sk_test_default_key')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', 'whsec_default_key')
 
 # Security settings (for production)
 if not DEBUG:

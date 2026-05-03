@@ -1,6 +1,7 @@
 from django.urls import path, include
 from django.views.generic import TemplateView
 from bookings import views
+from bookings.webhooks import stripe_webhook
 
 app_name = 'bookings'
 
@@ -27,5 +28,6 @@ urlpatterns = [
         path('delete/', views.BookingDeleteView.as_view(), name='booking_delete'),
         ]),
     ),
+    path('webhook/stripe/', stripe_webhook, name='stripe_webhook'),
     path('api/', include('bookings.urls_api')),
 ]

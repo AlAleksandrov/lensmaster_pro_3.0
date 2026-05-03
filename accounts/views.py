@@ -47,7 +47,19 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['bookings'] = BookingRequest.objects.filter(user=self.request.user).order_by('-event_date')
+        user = self.request.user
+
+        if user.email and user.first_name and user.last_name:
+            BookingRequest.objects.filter(
+                user__isnull=True,
+                email__iexact=user.email,
+                first_name__iexact=user.first_name,
+                last_name__iexact=user.last_name,
+            ).update(user=user)
+
+        context['bookings'] = BookingRequest.objects.filter(
+            user=user,
+        ).order_by('-event_date')
 
         context['favorite_productions'] = self.object.favorite_productions.all()
         context['favorite_equipment'] = self.object.favorite_equipment.all()
