@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
+
 from common.models import DescriptionMixin, ActiveStatusMixin, TimestampedMixin, ContactInfoMixin
 from django.core.exceptions import ValidationError
 
@@ -61,7 +63,7 @@ class ServicePackage(DescriptionMixin, ActiveStatusMixin, models.Model):
 
     category = models.ForeignKey(
         'productions.Category',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name='packages',
         blank=True,
         null=True,
@@ -165,6 +167,10 @@ class BookingRequest(TimestampedMixin, ContactInfoMixin, models.Model):
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
 
+    def clean(self):
+        if self.event_date and self.event_date < timezone.now().date():
+            raise ValidationError({'event_date': 'Event date cannot be in the past.'})
+
     def __str__(self):
         return f'{self.full_name} - {self.event_date} ({self.get_status_display()})'
 
@@ -193,6 +199,10 @@ class Availability(models.Model):
     def clean(self):
         if self.start_time >= self.end_time:
             raise ValidationError('Start time must be earlier than end time.')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return (

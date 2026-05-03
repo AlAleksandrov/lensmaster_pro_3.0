@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Edit Profile - LensMaster Pro{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+
 <div class="row justify-content-center py-4 py-lg-5">
     <div class="col-md-10 col-lg-9">
         <div class="card border-0 rounded-4 overflow-hidden">
@@ -35,7 +39,7 @@
                     </div>
                     {% endif %}
 
-                    <form method="post" enctype="multipart/form-data" novalidate>
+                    <form method="post" enctype="multipart/form-data" novalidate id="profile-edit-form">
                         {% csrf_token %}
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -53,6 +57,9 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Phone</label>
                                 {{ form.phone }}
+                                {% if form.phone.help_text %}
+                                    <div class="form-text">{{ form.phone.help_text }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">City</label>
@@ -87,4 +94,7 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+<script src="{% static 'js/profile-phone.js' %}"></script>
 {% endblock %}

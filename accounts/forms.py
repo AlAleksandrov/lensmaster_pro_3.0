@@ -122,20 +122,22 @@ class ProfileEditForm(forms.ModelForm):
         fields = ('profile_picture', 'phone', 'bio', 'city')
         labels = {
             'profile_picture': 'Upload a profile photo (JPEG, PNG or WebP, max 5MB).',
-            'phone': 'Your contact phone number (at least 10 digits).',
+            'phone': 'Phone Number',
             'bio': 'A short description about yourself.',
             'city': 'The city you are based in.',
         }
         help_texts = {
-            'phone': 'Please provide a valid phone number (at least 10 digits).',
+            'phone': 'Select your country code and enter your local phone number.',
             'bio': 'Tell us about yourself (at least 10 characters).',
             'city': 'Enter your city name.',
         }
         widgets = {
             'phone': forms.TextInput(
                 attrs={
+                    'id': 'profile-phone-input',
+                    'type': 'tel',
                     'class': 'form-control bg-dark text-white border-secondary',
-                    'placeholder': '08XXXXXXXX',
+                    'placeholder': 'Your phone number',
                 }
             ),
             'bio': forms.Textarea(

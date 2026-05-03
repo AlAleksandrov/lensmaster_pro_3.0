@@ -37,7 +37,7 @@ ALLOWED_HOSTS.extend([
     "127.0.0.1",
     "localhost",
     "rosella-unshotted-adjustably.ngrok-free.dev",
-    'lensmaster-pro-2-0.onrender.com',
+    'lensmaster-pro.onrender.com',
     'lensmasterpro2-ghgmfnbbhfayfneh.spaincentral-01.azurewebsites.net',
     'lensmasterpro2.azurewebsites.net',
     '0.0.0.0',
@@ -50,7 +50,7 @@ CSRF_TRUSTED_ORIGINS = ([
         "http://127.0.0.1",
         "http://localhost",
         "https://rosella-unshotted-adjustably.ngrok-free.dev",
-        'https://lensmaster-pro-2-0.onrender.com',
+        'https://lensmaster-pro.onrender.com',
         'https://lensmasterpro2-ghgmfnbbhfayfneh.spaincentral-01.azurewebsites.net',
         'https://lensmasterpro2.azurewebsites.net',
     ])
@@ -278,9 +278,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 Q_CLUSTER = {
     'name': 'lensmaster',
-    'workers': 4,
+    'workers': 2,
     'timeout': 60,
-    'retry': 90,
+    'retry': 120,
     'queue_limit': 50,
     'bulk': 10,
     'orm': 'default',

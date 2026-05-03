@@ -18,6 +18,8 @@ service_package_patterns = [
 ]
 
 urlpatterns = [
+    path('webhook/stripe/', stripe_webhook, name='stripe_webhook'),
+    path('api/', include('bookings.urls_api')),
     path('package/<int:pk>/favorite/', views.ToggleFavoritePackageView.as_view(), name='toggle_favorite_package'),
     path('request/', views.BookingCreateView.as_view(), name='booking_request'),
     path('success/', TemplateView.as_view(template_name='bookings/booking_success.html'), name='booking_success'),
@@ -28,6 +30,4 @@ urlpatterns = [
         path('delete/', views.BookingDeleteView.as_view(), name='booking_delete'),
         ]),
     ),
-    path('webhook/stripe/', stripe_webhook, name='stripe_webhook'),
-    path('api/', include('bookings.urls_api')),
 ]
