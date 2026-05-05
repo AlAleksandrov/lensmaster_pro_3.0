@@ -679,6 +679,3 @@ On Azure, the application is split into separate services:
 - **Booking Auto-fill**: `BookingCreateView` pre-fills first name, last name, email, phone, and city from the logged-in user's profile.
 - **Data Migrations**: `0002_create_groups.py` automatically creates the `Photographers` group on first migrate.
 - **License**: Educational project — Django Advanced Exam.
-
-
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="AlAleksandrov" data-color="#5F7FFF" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
